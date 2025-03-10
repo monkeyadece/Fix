@@ -135,6 +135,69 @@ function Set-VulnerableDriverBlocklistEnable {
     return $false
 }
 
+function Get-CoreIsolationStatus {
+    $regPath = "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity"
+    $regKey = "Enabled"
+
+    try {
+        $coreIsolationStatus = Get-ItemProperty -Path $regPath -Name $regKey -ErrorAction SilentlyContinue
+        if ($coreIsolationStatus -and $coreIsolationStatus.$regKey -eq 1) {
+            return "Enabled"
+        } else {
+            return "Disabled"
+        }
+    } catch {
+        Write-Error "Failed to retrieve Core Isolation status. Error: $_"
+        return "Unknown"
+    }
+}
+
+function Disable-CoreIsolation {
+    $regPath = "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity"
+    $regKey = "Enabled"
+
+    try {
+        if (-not (Test-Path $regPath)) {
+            Write-Info "Creating registry path: $regPath"
+            New-Item -Path $regPath -Force | Out-Null
+        }
+
+        Write-Info "Disabling Core Isolation (Memory Integrity)..."
+        Set-ItemProperty -Path $regPath -Name $regKey -Value 0 -ErrorAction Stop
+        Write-Info "Core Isolation has been disabled. A system restart is required for the changes to take effect."
+        return $true
+    } catch {
+        Write-Error "Failed to disable Core Isolation. Error: $_"
+        return $false
+    }
+}
+
+function Get-WindowsDefenderStatus {
+    try {
+        $defenderStatus = Get-MpComputerStatus
+        if ($defenderStatus -and $defenderStatus.AntivirusEnabled -eq $true) {
+            return "Enabled"
+        } else {
+            return "Disabled"
+        }
+    } catch {
+        Write-Error "Failed to retrieve Windows Defender status. Error: $_"
+        return "Unknown"
+    }
+}
+
+function Disable-WindowsDefender {
+    try {
+        Write-Info "Disabling Windows Defender temporarily..."
+        Set-MpPreference -DisableRealtimeMonitoring $true
+        Write-Info "Windows Defender has been disabled."
+        return $true
+    } catch {
+        Write-Error "Failed to disable Windows Defender. Error: $_"
+        return $false
+    }
+}
+
 $softwareList = @(
     @{ 
         Names = @("Microsoft Visual C++ 2015-2022 Redistributable (x64)", "Microsoft Visual C++ 2015 Redistributable (x64)", "Microsoft Visual C++ 2017 Redistributable (x64)", "Microsoft Visual C++ 2019 Redistributable (x64)"); 
@@ -152,36 +215,43 @@ $softwareList = @(
 
 Write-Header "Vector Fixer - Divine Reselling | E"
 
-foreach ($software in $softwareList) {
-    $displayNames = $software.Names
-    $url = $software.URL
+# Check Windows Defender Status
+$defenderStatus = Get-WindowsDefenderStatus
+Write-Header "Antivirus Status"
+Write-Info "Windows Defender is currently: $defenderStatus"
 
-    if ($displayNames[0] -like "*DirectX*") {
-        if (Is-DirectXInstalled) {
-            Write-Info "$($displayNames[0]) is already installed."
-        } else {
-            Write-Warning "$($displayNames[0]) is not installed."
-            Install-Software -Name $displayNames[0] -Url $url
+if ($defenderStatus -eq "Enabled") {
+    $disableDefenderChoice = Read-Host "Do you want to disable Windows Defender temporarily? (Y/N)"
+    if ($disableDefenderChoice -eq 'Y' -or $disableDefenderChoice -eq 'y') {
+        $disableSuccess = Disable-WindowsDefender
+        if (-not $disableSuccess) {
+            Write-Error "Failed to disable Windows Defender. Please disable it manually."
         }
     } else {
-        if (Is-SoftwareInstalled $displayNames) {
-            Write-Info "$($displayNames[0]) is installed."
-            $choice = Read-Host "Do you want to (1) Repair or (2) Do nothing? Enter 1 or 2"
-            if ($choice -eq 1) {
-                Write-Info "Repairing $($displayNames[0])..."
-            } elseif ($choice -eq 2) {
-                Write-Info "Skipping $($displayNames[0])."
-            } else {
-                Write-Warning "Invalid choice. Skipping $($displayNames[0])."
-            }
-        } else {
-            Write-Warning "$($displayNames[0]) is not installed."
-            Install-Software -Name $displayNames[0] -Url $url
-        }
+        Write-Warning "Windows Defender is still enabled. This may interfere with the script."
     }
 }
 
+# Registry Configuration Section
 Write-Header "Registry Configuration"
+
+# Check Core Isolation Status
+$coreIsolationStatus = Get-CoreIsolationStatus
+Write-Info "Core Isolation (Memory Integrity) is currently: $coreIsolationStatus"
+
+if ($coreIsolationStatus -eq "Enabled") {
+    Write-Warning "Core Isolation is enabled. Disabling it now..."
+    $disableSuccess = Disable-CoreIsolation
+    if ($disableSuccess) {
+        Write-Info "Core Isolation has been disabled. A system restart is required."
+        Write-Info "Restarting the computer..."
+        Restart-Computer -Force
+    } else {
+        Write-Error "Failed to disable Core Isolation. Please disable it manually from Windows Security > Device Security > Core Isolation."
+    }
+}
+
+# Modify VulnerableDriverBlocklistEnable
 Write-Info "Checking and modifying the registry key 'VulnerableDriverBlocklistEnable'..."
 $restartRequired = Set-VulnerableDriverBlocklistEnable
 
