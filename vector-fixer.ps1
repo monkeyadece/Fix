@@ -32,18 +32,11 @@ function Write-Error {
 
 function Test-Windows11_24H2 {
     $osInfo = Get-ComputerInfo -Property "OsName", "OsVersion"
-    if ($osInfo.OsName -like "*Windows 11*" -and $osInfo.OsVersion -like "10.0.26063*") {
+    if ($osInfo.OsName -like "*Windows 11*" -and $osInfo.OsVersion -match "10\.0\.26[0-9]{3}") {
         return $true
     }
     return $false
 }
-
-# Warn the user about antivirus
-Write-Header "Antivirus Warning"
-Write-Warning "Make sure to turn off your anti-virus or any other third-party ones that you may not know of."
-Write-Warning "You have to turn it off before using this fixer and Vector."
-Write-Host "Press any key to continue..." -ForegroundColor DarkRed
-$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 
 if (Test-Windows11_24H2) {
     Write-Header "Unsupported Windows Version"
@@ -52,6 +45,13 @@ if (Test-Windows11_24H2) {
     $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
     exit
 }
+
+# Warn the user about antivirus
+Write-Header "Antivirus Warning"
+Write-Warning "Make sure to turn off your anti-virus or any other third-party ones that you may not know of."
+Write-Warning "You have to turn it off before using this fixer and Vector."
+Write-Host "Press any key to continue..." -ForegroundColor DarkRed
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 
 function Clear-TempFiles {
     Write-Info "Deleting TEMP files, please wait..."
