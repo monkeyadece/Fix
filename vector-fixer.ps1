@@ -46,7 +46,6 @@ if (Test-Windows11_24H2) {
     exit
 }
 
-# Warn the user about antivirus
 Write-Header "Antivirus Warning"
 Write-Warning "Make sure to turn off your anti-virus or any other third-party ones that you may not know of."
 Write-Warning "You have to turn it off before using this fixer and Vector."
