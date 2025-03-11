@@ -1,3 +1,4 @@
+# OLD VERSION BBROKEN AND NOT GOOD
 $Host.UI.RawUI.WindowTitle = "Vector Fixer - Divine Reselling | E"
 
 function Write-Header {
