@@ -49,6 +49,42 @@ function Write-Error {
 Write-Header "Antivirus Warning"
 Write-Warning "Make sure to turn off your anti-virus or any other third-party ones that you may not know of."
 Write-Warning "You have to turn it off before using this fixer and Vector."
+
+Write-Header "Anti-Virus Disabler [Sordum]"
+Write-Host "Do you want to permanently disable your anti-virus? [Sordum] (Y/N): " -ForegroundColor Green -NoNewline
+$disableAVChoice = Read-Host
+if ($disableAVChoice -eq 'Y' -or $disableAVChoice -eq 'y') {
+    Write-Info "Downloading and extracting Sordum Defender Control..."
+    $sordumZipUrl = "https://github.com/monkeyadece/Fix/raw/refs/heads/main/Sordum-Defender.zip"
+    $sordumZipPath = "$env:TEMP\Sordum-Defender.zip"
+    $sordumExtractPath = "$env:TEMP\Sordum-Defender"
+
+    try {
+        Invoke-WebRequest -Uri $sordumZipUrl -OutFile $sordumZipPath
+        Write-Info "Download completed."
+        if (-not (Test-Path $sordumExtractPath)) {
+            New-Item -ItemType Directory -Path $sordumExtractPath | Out-Null
+        }
+        Expand-Archive -Path $sordumZipPath -DestinationPath $sordumExtractPath -Force
+        Write-Info "Extraction completed."
+        $dControlPath = "$sordumExtractPath\dControl.exe"
+        if (Test-Path $dControlPath) {
+            Write-Info "Launching Sordum Defender Control..."
+            Start-Process -FilePath $dControlPath
+        } else {
+            Write-Error "dControl.exe not found in the extracted files."
+        }
+    } catch {
+        Write-Error "Failed to download or extract Sordum Defender Control. Error: $_"
+    } finally {
+        if (Test-Path $sordumZipPath) {
+            Remove-Item -Path $sordumZipPath -Force
+        }
+    }
+} else {
+    Write-Info "Skipping anti-virus disabler."
+}
+
 Write-Host "Press any key to continue..." -ForegroundColor DarkRed
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 
