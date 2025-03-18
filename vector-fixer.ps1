@@ -49,6 +49,7 @@ if (Test-Windows11_24H2) {
 Write-Header "Antivirus Warning"
 Write-Warning "Make sure to turn off your anti-virus or any other third-party ones that you may not know of."
 Write-Warning "You have to turn it off before using this fixer and Vector."
+Write-Warning "Message from: Divine Rselling."
 
 Write-Header "Anti-Virus Disabler [Sordum]"
 Write-Host "Do you want to permanently disable your anti-virus? [Sordum] (Y/N): " -ForegroundColor Green -NoNewline
