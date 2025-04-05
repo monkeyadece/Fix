@@ -49,6 +49,7 @@ if (Test-Windows11_24H2) {
 Write-Header "Antivirus Warning"
 Write-Warning "Make sure to turn off your anti-virus or any other third-party ones that you may not know of."
 Write-Warning "You have to turn it off before using this fixer and Vector."
+Write-Warning "Please DO NOT load Vector while playing kernal anti-cheat games | EAC, VAC, ETC"
 Write-Warning "Message from: Divine Rselling."
 
 Write-Header "Anti-Virus Disabler [Sordum]"
