@@ -1,4 +1,4 @@
-$Host.UI.RawUI.WindowTitle = "Vector Fixer - Divine Reselling | E"
+$Host.UI.RawUI.WindowTitle = "Vector Bootstrapper - Divine Reselling | E"
 
 function Write-Header {
     param ([string]$Title)
@@ -35,9 +35,10 @@ if (Test-Windows11_24H2) {
 }
 
 Write-Header "Antivirus Warning"
-Write-Warning "Turn off all anti-virus (including 3rd-party)."
-Write-Warning "DO NOT run while EAC/VAC/Kernal AC games are open!"
-Write-Warning "Message from: Divine Reselling."
+Write-Warning "Make sure to turn off your anti-virus or any other third-party ones that you may not know of."
+Write-Warning "You have to turn it off before using this fixer and Vector."
+Write-Warning "Please DO NOT load Vector while playing kernal anti-cheat games | EAC, VAC, ETC"
+Write-Warning "Message from: Divine Rselling."
 
 Write-Header "Anti-Virus Disabler [Sordum]"
 Write-Host "Do you want to permanently disable your anti-virus? (Y/N): " -ForegroundColor Green -NoNewline
@@ -71,7 +72,7 @@ Write-Host "Press any key to continue..." -ForegroundColor DarkRed
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 
 do {
-    Write-Header "Vector Executable Downloader"
+    Write-Header "Vector Bootstrapper - Divine Reselling | E"
     Write-Host "[+] (1) Download loader.exe [Main loader for Vector]" -ForegroundColor Red
     Write-Host "[+] (2) Download Vector-fixer.exe [Fix all your vector issues]" -ForegroundColor Red
     Write-Host "[+] (3) Close Script" -ForegroundColor DarkRed
@@ -126,7 +127,7 @@ do {
             Write-Host "[INFO] Download canceled."
         }
     } elseif ($choice -eq "3") {
-        Write-Host "[INFO] Exiting script..."
+        Write-Host "[INFO] Exiting..."
         break
     } else {
         Write-Host "[ERROR] Invalid choice. Please select option 1, 2, or 3." -ForegroundColor DarkRed
