@@ -16,7 +16,7 @@ function Test-Admin {
 }
 if (-not (Test-Admin)) {
     Write-Header "Admin Required"
-    Write-Warning "Run this script as administrator!"
+    Write-Warning "Run this as administrator!"
     Write-Host "Press any key to exit..." -ForegroundColor DarkRed
     $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
     exit
@@ -75,7 +75,7 @@ do {
     Write-Header "Vector Bootstrapper - Divine Reselling | E"
     Write-Host "[+] (1) Download loader.exe [Main loader for Vector]" -ForegroundColor Red
     Write-Host "[+] (2) Download Vector-fixer.exe [Fix all your vector issues]" -ForegroundColor Red
-    Write-Host "[+] (3) Close Script" -ForegroundColor DarkRed
+    Write-Host "[+] (3) Close Bootstrapper" -ForegroundColor DarkRed
     Write-Host "Enter your choice (1, 2, or 3): " -ForegroundColor Red -NoNewline
 
     $choice = Read-Host
