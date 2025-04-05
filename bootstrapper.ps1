@@ -111,18 +111,43 @@ do {
                 Write-Host "[INFO] File downloaded successfully."
                 Write-Host "Downloaded to: $dest"
 
-                Write-Host "Do you want to run the downloaded file? (Y/N): " -ForegroundColor Green -NoNewline
-                $confirmRun = Read-Host
-                if ($confirmRun -eq 'Y' -or $confirmRun -eq 'y') {
-                    Write-Host "[INFO] Running $fileName..."
-                    Start-Process -FilePath $dest
-                } else {
-                    Write-Host "[INFO] Skipping file execution."
-                }
-
             } catch {
-                Write-Error "Failed to download or run $fileName. $($_.Exception.Message)"
+                Write-Error "Failed to download via BITS. Attempting fallback download method. $_"
+                try {
+                    Write-Host "[INFO] Falling back to Invoke-WebRequest for $fileName..."
+
+                    $startTime = Get-Date
+                    Invoke-WebRequest -Uri $url -OutFile $dest
+
+                    if (-Not (Test-Path $dest)) {
+                        throw "Fallback download failed. File not found."
+                    }
+
+                    $fileSize = (Get-Item $dest).Length
+                    if ($fileSize -lt 10000) {
+                        throw "Downloaded file is too small or invalid."
+                    }
+
+                    $elapsedTime = (Get-Date) - $startTime
+                    $speed = $fileSize / $elapsedTime.TotalSeconds / 1MB
+                    Write-Host "[INFO] Download speed: $([math]::round($speed, 2)) MB/s"
+                    Write-Host "[INFO] Fallback file downloaded successfully."
+                    Write-Host "Downloaded to: $dest"
+
+                } catch {
+                    Write-Error "Fallback download also failed. $_"
+                }
             }
+
+            Write-Host "Do you want to run the downloaded file? (Y/N): " -ForegroundColor Green -NoNewline
+            $confirmRun = Read-Host
+            if ($confirmRun -eq 'Y' -or $confirmRun -eq 'y') {
+                Write-Host "[INFO] Running $fileName..."
+                Start-Process -FilePath $dest
+            } else {
+                Write-Host "[INFO] Skipping file execution."
+            }
+
         } else {
             Write-Host "[INFO] Download canceled."
         }
