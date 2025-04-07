@@ -30,21 +30,21 @@ function Write-Error {
     Write-Host "[ERROR] $Message" -ForegroundColor DarkRed
 }
 
-function Test-Windows11_24H2 {
-    $osInfo = Get-ComputerInfo -Property "OsName", "OsVersion"
-    if ($osInfo.OsName -like "*Windows 11*" -and $osInfo.OsVersion -match "10\.0\.26[0-9]{3}") {
-        return $true
-    }
-    return $false
-}
+# function Test-Windows11_24H2 {
+#     $osInfo = Get-ComputerInfo -Property "OsName", "OsVersion"
+#     if ($osInfo.OsName -like "*Windows 11*" -and $osInfo.OsVersion -match "10\.0\.26[0-9]{3}") {
+#         return $true
+#     }
+#     return $false
+# }
 
-if (Test-Windows11_24H2) {
-    Write-Header "Unsupported Windows Version"
-    Write-Error "You are on Windows 11 24H2. Please downgrade your Windows. Vector does not support 24H2."
-    Write-Host "Press any key to exit..." -ForegroundColor DarkRed
-    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-    exit
-}
+# if (Test-Windows11_24H2) {
+#     Write-Header "Unsupported Windows Version"
+#     Write-Error "You are on Windows 11 24H2. Please downgrade your Windows. Vector does not support 24H2."
+#     Write-Host "Press any key to exit..." -ForegroundColor DarkRed
+#     $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+#     exit
+# }
 
 Write-Header "Antivirus Warning"
 Write-Warning "Make sure to turn off your anti-virus or any other third-party ones that you may not know of."
